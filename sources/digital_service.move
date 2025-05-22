@@ -47,6 +47,12 @@ public struct AccountBound has copy, drop {
     success: bool
 }
 
+public struct FeeInfo has copy, drop { 
+    payment: u64,
+    // 发行服务费
+    fee: u64,
+}
+
 /// 开通服务事件
 public struct DigitalServiceOpened has copy, drop {
     public_key: std::string::String,
@@ -77,8 +83,8 @@ fun init(otw: DIGITAL_SERVICE, ctx: &mut TxContext) {
         id: object::new(ctx),
         balance: balance::zero(),
         count: 0,
-        // 1 SUI
-        fee: 1_000_000_000,
+        // SUI
+        fee: 1_000,
         record: table::new<address, String>(ctx),
         open_record: table::new<address, bool>(ctx)
     };
@@ -120,6 +126,10 @@ public entry fun bind_account(fee: &mut OpenFee, signature: vector<u8>, public_k
 public entry fun open_digital_service(self: &mut OpenFee, symbol: vector<u8>, name: vector<u8>, description: vector<u8>, icon_url: vector<u8>, payment: &mut Coin<SUI>, ctx: &mut TxContext) {
     let sender = ctx.sender();
 
+    event::emit(FeeInfo{
+        payment: payment.value(),
+        fee: self.fee
+    });
     // 账户不存在
     assert!(table::contains(&self.record, sender), EAccountNotExist);
     // 重复开通

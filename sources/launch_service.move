@@ -77,8 +77,8 @@ fun init(otw: LAUNCH_SERVICE, ctx: &mut TxContext) {
         id: object::new(ctx),
         balance: balance::zero(),
         count: 0,
-        // 1 SUI
-        fee: 1_000_000_000,
+        // SUI
+        fee: 1_000,
         record: table::new<String, bool>(ctx)
     };
 
